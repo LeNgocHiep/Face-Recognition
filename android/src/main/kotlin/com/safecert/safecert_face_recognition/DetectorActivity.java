@@ -29,6 +29,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.hardware.camera2.CameraCharacteristics;
 import android.media.ImageReader.OnImageAvailableListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Size;
@@ -50,6 +51,7 @@ import com.google.mlkit.vision.face.FaceDetector;
 import com.google.mlkit.vision.face.FaceDetectorOptions;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -131,13 +133,14 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
     private byte[] image;
     private String name;
+
     //private HashMap<String, Classifier.Recognition> knownFaces = new HashMap<>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        image = getIntent().getByteArrayExtra("image");
+        image = getIntent().getByteArrayExtra("imageFirst");
         name = getIntent().getStringExtra("name");
 //        fabAdd = findViewById(R.id.fab_add);
 //        fabAdd.setOnClickListener(view -> onAddClick());
@@ -549,8 +552,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                         if (result.getId().equals("0")) {
                             color = Color.GREEN;
                             Intent data = new Intent();
-                            data.putExtra("result",1);
-                            setResult(RESULT_OK,data);
+                            data.putExtra("result", 1);
+                            setResult(RESULT_OK, data);
                             finish();
                         } else {
                             color = Color.RED;
@@ -697,7 +700,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 //          Object extra = result.getExtra();
 //          if (extra != null) {
 //            LOGGER.i("embeeding retrieved " + extra.toString());
-          }
+                }
 
 //                    float conf = result.getDistance();
 //                    if (conf < 1.0f) {
@@ -752,7 +755,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
             LOGGER.i("Adding results");
             SimilarityClassifier.Recognition rec = mappedRecognitions.get(0);
 //            if (rec.getExtra() != null) {
-            Bitmap r = rec.getCrop();
+//            Bitmap r = rec.getCrop();
             detector.register(name, rec);
 //                showAddFaceDialog(rec);
 //            }
@@ -780,8 +783,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                     if (faces.size() == 0) {
 //                        updateResults(currTimestamp, new LinkedList<>());
                         Intent data = new Intent();
-                        data.putExtra("result",-1);
-                        setResult(RESULT_OK,data);
+                        data.putExtra("result", -1);
+                        setResult(RESULT_OK, data);
                         finish();
                         return;
                     }
@@ -792,5 +795,4 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                             });
                 });
     }
-
 }

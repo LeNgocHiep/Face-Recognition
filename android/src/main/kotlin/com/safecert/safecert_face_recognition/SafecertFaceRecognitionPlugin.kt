@@ -3,10 +3,8 @@ package com.safecert.safecert_face_recognition
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
@@ -100,6 +98,7 @@ public class SafecertFaceRecognitionPlugin : FlutterPlugin, MethodCallHandler, P
     private var rs: MethodChannel.Result? = null
     private var activity: Activity? = null
     private var context: Context? = null
+    private var recognitionImageData: RecognitionImageData? = RecognitionImageData()
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         if (requestCode == REQUEST_CODE) {
@@ -116,14 +115,24 @@ public class SafecertFaceRecognitionPlugin : FlutterPlugin, MethodCallHandler, P
         channel = MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "safecert_face_recognition")
         channel.setMethodCallHandler(this)
         context = flutterPluginBinding.applicationContext
+        recognitionImageData?.init(context)
     }
 
-    private fun onLoginSuccess(name: String, image: ByteArray) {
+    private fun recognizeCamera(name: String, image: ByteArray) {
         val intent = Intent(context, DetectorActivity::class.java)
         intent.putExtra("name", name)
-        intent.putExtra("image", image)
+        intent.putExtra("imageFirst", image)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
         activity!!.startActivityForResult(intent, REQUEST_CODE)
+    }
+
+    //    private val callBack = object : CallBackFace {
+//        override fun completeRecognition(result: Int) {
+//            TODO("Not yet implemented")
+//        }
+//    }
+    private fun recognize(name: String, first: ByteArray, second: ByteArray) {
+
     }
 
     // This static function is optional and equivalent to onAttachedToEngine. It supports the old
@@ -145,12 +154,25 @@ public class SafecertFaceRecognitionPlugin : FlutterPlugin, MethodCallHandler, P
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         this.rs = result
+        val imageFirst: ByteArray
+        val imageSecond: ByteArray
+        val name: String
         if (call.method == "handle_face_recognize") {
-            val image = call.argument<ByteArray>("image")
-            val name = call.argument<String>("name")
-            if (image != null) {
-                onLoginSuccess(name.toString(), image)
-            }
+            imageFirst = call.argument<ByteArray>("imageFirst")!!
+            name = call.argument<String>("name").toString()
+            if (imageFirst != null) {
+                recognizeCamera(name.toString(), imageFirst)
+            } else result.success(0)
+        } else if (call.method == "handle_face_recognize_two_data") {
+            imageFirst = call.argument<ByteArray>("imageFirst")!!
+            imageSecond = call.argument<ByteArray>("imageSecond")!!
+            name = call.argument<String>("name").toString()
+            if (imageFirst != null && imageSecond != null) {
+//                recognize(name.toString(), imageFirst, imageSecond)
+                recognitionImageData?.onRecognizeData(imageFirst, imageSecond, name.toString()) { r ->
+                    result.success(r)
+                }
+            } else result.success(0)
         } else {
             result.notImplemented()
         }
