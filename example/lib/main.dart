@@ -17,6 +17,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
+  RecognitionStatus recognitionStatus;
 
   @override
   void initState() {
@@ -28,8 +29,8 @@ class _MyAppState extends State<MyApp> {
     int platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      platformVersion = await SafecertFaceRecognition.startWithImageUrl(
-          url: "https://i1.sndcdn.com/artworks-000368577903-4933qc-t500x500.jpg", name: "Le ngoc Hiep");
+      recognitionStatus = await SafecertFaceRecognition.startWithImageUrl(
+          url: "https://i1.sndcdn.com/artworks-000368577903-4933qc-t500x500.jpg", name: "Binz");
       print(platformVersion);
     } on PlatformException {
       platformVersion = 0;
@@ -50,7 +51,7 @@ class _MyAppState extends State<MyApp> {
               .load("https://vtv1.mediacdn.vn/thumb_w/650/2020/9/14/11-16000550120591280108448.jpg"))
           .buffer
           .asUint8List();
-      platformVersion = await SafecertFaceRecognition.startWith2Image(
+      recognitionStatus = await SafecertFaceRecognition.startWithImages(
           dataImageFirst: bytes, dataImageSecond: bytes2, name: "Le ngoc Hiep");
       print(platformVersion);
     } on PlatformException {
@@ -63,7 +64,12 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     setState(() {
-      _platformVersion = platformVersion.toString();
+      if(recognitionStatus == RecognitionStatus.OK)
+        _platformVersion = "OK";
+      else if(recognitionStatus == RecognitionStatus.FAIL)
+        _platformVersion = "FAIL";
+      else _platformVersion = "ERROR";
+      // _platformVersion = platformVersion.toString();
     });
   }
 

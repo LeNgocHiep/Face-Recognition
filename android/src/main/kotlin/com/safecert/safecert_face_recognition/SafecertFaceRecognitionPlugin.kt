@@ -18,82 +18,12 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 /** SafecertFaceRecognitionPlugin */
 public class SafecertFaceRecognitionPlugin : FlutterPlugin, MethodCallHandler, PluginRegistry.ActivityResultListener, ActivityAware {
 
-//    private val channelName = "safecert_face_recognition"
-//
-//    private val REQUEST_CODE_FOR_QR_CODE_SCAN = 2999
-//
-//
-//    private var channel: MethodChannel? = null
-//    private var activity: Activity? = null
-//    private var pendingResult: Result? = null
-//    private var resultCode = 0
-//    private var rs: MethodChannel.Result? = null
-//
-//    override fun onAttachedToEngine(flutterPluginBinding: FlutterPluginBinding) {
-//        channel = MethodChannel(flutterPluginBinding.flutterEngine.dartExecutor, channelName)
-//        channel!!.setMethodCallHandler(this)
-//    }
-//
-//
-//    fun registerWith(registrar: Registrar) {
-//        activity = registrar.activity()
-//        val channel = MethodChannel(registrar.messenger(), channelName)
-//        channel.setMethodCallHandler(SafecertFaceRecognitionPlugin())
-//    }
-//
-//    override fun onMethodCall(call: MethodCall, result: Result) {
-//        rs = result
-//        if (call.method == "1231") {
-//            result.success("Android " + Build.VERSION.RELEASE)
-//        } else if (call.method == "handle_face_recognize") {
-//            val image = call.argument<ByteArray>("image")
-//            val name = call.argument<String>("name")
-//            val intent = Intent(activity, DetectorActivity::class.java)
-//            intent.putExtra("name", name)
-//            intent.putExtra("image", image)
-//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
-//            activity!!.startActivityForResult(intent, REQUEST_CODE_FOR_QR_CODE_SCAN)
-//        } else {
-//            result.notImplemented()
-//        }
-//    }
-//
-//    override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
-//        channel!!.setMethodCallHandler(null)
-//    }
-//
-//    override fun onAttachedToActivity(activityPluginBinding: ActivityPluginBinding) {
-//        activity = activityPluginBinding.activity
-//        activityPluginBinding.addActivityResultListener(this)
-//    }
-//
-//    override fun onDetachedFromActivityForConfigChanges() {}
-//
-//    override fun onReattachedToActivityForConfigChanges(activityPluginBinding: ActivityPluginBinding) {}
-//
-//    override fun onDetachedFromActivity() {
-//        activity = null
-//    }
-//
-//
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-//        if (requestCode == REQUEST_CODE_FOR_QR_CODE_SCAN) {
-//            if (resultCode == Activity.RESULT_OK) {
-//                this.resultCode = data?.getIntExtra("result", 0)!!
-//            } else this.resultCode = resultCode
-//            rs!!.success(this.resultCode)
-//            return true
-//        }
-//        return false
-//    }
-//}
-
     /// The MethodChannel that will the communication between Flutter and native Android
     ///
     /// This local reference serves to register the plugin with the Flutter Engine and unregister it
     /// when the Flutter Engine is detached from the Activity
     private lateinit var channel: MethodChannel
-    private val REQUEST_CODE = 15
+    private val REQUEST_CODE = 1994
     private var resultCode = 0
     private var rs: MethodChannel.Result? = null
     private var activity: Activity? = null
@@ -124,15 +54,6 @@ public class SafecertFaceRecognitionPlugin : FlutterPlugin, MethodCallHandler, P
         intent.putExtra("imageFirst", image)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
         activity!!.startActivityForResult(intent, REQUEST_CODE)
-    }
-
-    //    private val callBack = object : CallBackFace {
-//        override fun completeRecognition(result: Int) {
-//            TODO("Not yet implemented")
-//        }
-//    }
-    private fun recognize(name: String, first: ByteArray, second: ByteArray) {
-
     }
 
     // This static function is optional and equivalent to onAttachedToEngine. It supports the old
