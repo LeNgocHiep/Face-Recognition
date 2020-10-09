@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AndroidLogFilters">
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="0ef7d3fd-622c-412f-b963-a38c1d960d35" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,7 +19,7 @@
   <component name="PropertiesComponent">
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/android" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/example" />
     <property name="settings.editor.selected.configurable" value="dart.settings" />
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
@@ -34,54 +37,82 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="267" y="275" key="FileChooserDialogImpl" timestamp="1601633684058">
+    <state width="519" height="466" key="DebuggerActiveHint" timestamp="1602065231486">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="267" y="275" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1601633684058" />
-    <state width="1225" height="194" key="GridCell.Tab.0.bottom" timestamp="1602056360911">
+    <state width="519" height="466" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1602065231486" />
+    <state x="267" y="275" key="FileChooserDialogImpl" timestamp="1602121437079">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1225" height="194" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1602056360911" />
-    <state width="1225" height="194" key="GridCell.Tab.0.center" timestamp="1602056360910">
+    <state x="267" y="275" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1602121437079" />
+    <state width="916" height="217" key="GridCell.Tab.0.bottom" timestamp="1602121438150">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1225" height="194" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1602056360910" />
-    <state width="1225" height="194" key="GridCell.Tab.0.left" timestamp="1602056360909">
+    <state width="916" height="217" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1602121438150" />
+    <state width="916" height="217" key="GridCell.Tab.0.center" timestamp="1602121438150">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1225" height="194" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1602056360909" />
-    <state width="1225" height="194" key="GridCell.Tab.0.right" timestamp="1602056360910">
+    <state width="916" height="217" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1602121438150" />
+    <state width="916" height="217" key="GridCell.Tab.0.left" timestamp="1602121438150">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1225" height="194" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1602056360910" />
-    <state width="1225" height="194" key="GridCell.Tab.1.bottom" timestamp="1602056360911">
+    <state width="916" height="217" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1602121438150" />
+    <state width="916" height="217" key="GridCell.Tab.0.right" timestamp="1602121438150">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1225" height="194" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1602056360911" />
-    <state width="1225" height="194" key="GridCell.Tab.1.center" timestamp="1602056360911">
+    <state width="916" height="217" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1602121438150" />
+    <state width="916" height="217" key="GridCell.Tab.1.bottom" timestamp="1602121438150">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1225" height="194" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1602056360911" />
-    <state width="1225" height="194" key="GridCell.Tab.1.left" timestamp="1602056360911">
+    <state width="916" height="217" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1602121438150" />
+    <state width="916" height="217" key="GridCell.Tab.1.center" timestamp="1602121438150">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1225" height="194" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1602056360911" />
-    <state width="1225" height="194" key="GridCell.Tab.1.right" timestamp="1602056360911">
+    <state width="916" height="217" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1602121438150" />
+    <state width="916" height="217" key="GridCell.Tab.1.left" timestamp="1602121438150">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1225" height="194" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1602056360911" />
+    <state width="916" height="217" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1602121438150" />
+    <state width="916" height="217" key="GridCell.Tab.1.right" timestamp="1602121438150">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="916" height="217" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1602121438150" />
     <state x="206" y="183" key="SettingsEditor" timestamp="1602055181341">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="206" y="183" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1602055181341" />
+    <state x="536" y="256" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1602062244506">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="536" y="256" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.1920.1040@0.0.1920.1040" timestamp="1602062244506" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="Dart">
           <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
-          <line>28</line>
-          <option name="timeStamp" value="1" />
+          <line>213</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>204</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>220</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>200</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="Dart">
+          <url>file://$PROJECT_DIR$/example/lib/main.dart</url>
+          <line>201</line>
+          <option name="timeStamp" value="11" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

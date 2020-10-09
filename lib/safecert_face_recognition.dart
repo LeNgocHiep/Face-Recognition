@@ -8,7 +8,7 @@ enum RecognitionStatus { OK, FAIL, ERROR }
 
 class SafecertFaceRecognition {
   static const MethodChannel _channel =
-      const MethodChannel('safecert_face_recognition');
+  const MethodChannel('safecert_face_recognition');
 
   // static Future<String> get platformVersion async {
   //   final String version = await _channel.invokeMethod('handle_face_recognize');
@@ -19,6 +19,14 @@ class SafecertFaceRecognition {
       {@required Uint8List imageData, String name}) async {
     int resp = await _channel.invokeMethod(
         'handle_face_recognize', {"imageFirst": imageData, "name": name ?? ''});
+    return _getResult(resp);
+  }
+
+  static Future<RecognitionStatus> startWithImagePath(
+      {@required List<String> path, List<String> name, bool isMuti}) async {
+    int resp = await _channel.invokeMethod(
+        'handle_face_recognize_path',
+        {"path": path, "name": name ?? '', "muti": isMuti});
     return _getResult(resp);
   }
 
@@ -34,11 +42,34 @@ class SafecertFaceRecognition {
 
   static Future<RecognitionStatus> startWithImages(
       {@required Uint8List dataImageFirst,
-      @required Uint8List dataImageSecond,
-      String name}) async {
+        @required Uint8List dataImageSecond,
+        String name}) async {
     int resp = await _channel.invokeMethod('handle_face_recognize_two_data', {
       "imageFirst": dataImageFirst,
       "imageSecond": dataImageSecond,
+      "name": name ?? ""
+    });
+    return _getResult(resp);
+  }
+
+  static Future<RecognitionStatus> startWithPaths({@required String pathFirst,
+    @required String pathSecond,
+    String name}) async {
+    int resp = await _channel.invokeMethod('handle_face_recognize_two_path', {
+      "pathFirst": pathFirst,
+      "pathSecond": pathSecond,
+      "name": name ?? ""
+    });
+    return _getResult(resp);
+  }
+
+  static Future<RecognitionStatus> startWithMutiFace(
+      {@required String pathFirst,
+        @required String pathSecond,
+        String name}) async {
+    int resp = await _channel.invokeMethod('handle_face_recognize_two_path', {
+      "pathFirst": pathFirst,
+      "pathSecond": pathSecond,
       "name": name ?? ""
     });
     return _getResult(resp);

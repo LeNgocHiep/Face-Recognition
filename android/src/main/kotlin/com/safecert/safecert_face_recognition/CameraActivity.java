@@ -393,6 +393,7 @@ public abstract class CameraActivity extends AppCompatActivity
   protected synchronized void runInBackground(final Runnable r) {
     if (handler != null) {
       handler.post(r);
+
     }
   }
 

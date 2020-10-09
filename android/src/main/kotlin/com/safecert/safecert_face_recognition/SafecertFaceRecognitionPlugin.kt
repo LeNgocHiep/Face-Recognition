@@ -13,6 +13,8 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
+import java.io.File
+import java.util.ArrayList
 
 
 /** SafecertFaceRecognitionPlugin */
@@ -48,10 +50,11 @@ public class SafecertFaceRecognitionPlugin : FlutterPlugin, MethodCallHandler, P
         recognitionImageData?.init(context)
     }
 
-    private fun recognizeCamera(name: String, image: ByteArray) {
+    private fun recognizeCamera(name: ArrayList<String>, path: ArrayList<String>,muti:Boolean) {
         val intent = Intent(context, DetectorActivity::class.java)
-        intent.putExtra("name", name)
-        intent.putExtra("imageFirst", image)
+        intent.putStringArrayListExtra("name", name)
+        intent.putStringArrayListExtra("path", path)
+        intent.putExtra("muti",muti)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
         activity!!.startActivityForResult(intent, REQUEST_CODE)
     }
@@ -82,15 +85,38 @@ public class SafecertFaceRecognitionPlugin : FlutterPlugin, MethodCallHandler, P
             imageFirst = call.argument<ByteArray>("imageFirst")!!
             name = call.argument<String>("name").toString()
             if (imageFirst != null) {
-                recognizeCamera(name.toString(), imageFirst)
+//                recognizeCamera(name.toString(), imageFirst)
             } else result.success(0)
         } else if (call.method == "handle_face_recognize_two_data") {
             imageFirst = call.argument<ByteArray>("imageFirst")!!
             imageSecond = call.argument<ByteArray>("imageSecond")!!
             name = call.argument<String>("name").toString()
-            if (imageFirst != null && imageSecond != null) {
+//            if (imageFirst != null && imageSecond != null) {
 //                recognize(name.toString(), imageFirst, imageSecond)
-                recognitionImageData?.onRecognizeData(imageFirst, imageSecond, name.toString()) { r ->
+            recognitionImageData?.onRecognizeData(imageFirst, imageSecond, name) { r ->
+                result.success(r)
+            }
+//            } else result.success(0)
+        } else if (call.method == "handle_face_recognize_path") {
+            val path = call.argument<ArrayList<String>>("path")
+            val listName = call.argument<ArrayList<String>>("name")
+            val muti = call.argument<Boolean>("muti")
+            if (path?.size!! > 0) {
+//                val imgFile = File(path.toString())
+//                if (imgFile.exists()) {
+                if (listName != null) {
+                    if (muti != null) {
+                        recognizeCamera(listName, path, muti)
+                    }
+                }
+//                }
+            } else result.success(0)
+        } else if (call.method == "handle_face_recognize_two_path") {
+            val pathFirst = call.argument<String>("pathFirst")
+            val pathSecond = call.argument<String>("pathSecond")
+            name = call.argument<String>("name").toString()
+            if (pathFirst != null && pathSecond != null) {
+                recognitionImageData?.onRecognizePath(pathFirst, pathSecond, name) { r ->
                     result.success(r)
                 }
             } else result.success(0)

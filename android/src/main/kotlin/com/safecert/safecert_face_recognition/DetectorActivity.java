@@ -28,8 +28,8 @@ import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.hardware.camera2.CameraCharacteristics;
+import android.media.ExifInterface;
 import android.media.ImageReader.OnImageAvailableListener;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Size;
@@ -51,7 +51,6 @@ import com.google.mlkit.vision.face.FaceDetector;
 import com.google.mlkit.vision.face.FaceDetectorOptions;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -59,6 +58,10 @@ import java.util.List;
  * An activity that uses a TensorFlowMultiBoxDetector and ObjectTracker to detect and then track
  * objects.
  */
+interface CallBackImport {
+    void done();
+}
+
 public class DetectorActivity extends CameraActivity implements OnImageAvailableListener {
     private static final Logger LOGGER = new Logger();
 
@@ -131,8 +134,12 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
     private FloatingActionButton fabAdd;
 
-    private byte[] image;
-    private String name;
+    //    private byte[] image;
+    private List<String> path;
+    private List<String> name;
+    private Boolean muti = false;
+    Bitmap crop = null;
+//    Bitmap newBitmap;
 
     //private HashMap<String, Classifier.Recognition> knownFaces = new HashMap<>();
 
@@ -140,8 +147,9 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        image = getIntent().getByteArrayExtra("imageFirst");
-        name = getIntent().getStringExtra("name");
+        path = getIntent().getStringArrayListExtra("path");
+        name = getIntent().getStringArrayListExtra("name");
+        muti = getIntent().getBooleanExtra("muti", false);
 //        fabAdd = findViewById(R.id.fab_add);
 //        fabAdd.setOnClickListener(view -> onAddClick());
 //    fabAdd.setOnTouchListener(new View.OnTouchListener() {
@@ -175,12 +183,30 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
         FaceDetector detector = FaceDetection.getClient(options);
 
         faceDetector = detector;
-        onImportImage(image, name);
 
+
+
+//        Bitmap bmp = BitmapFactory.decodeFile(path);
+//        newBitmap = RecognitionImageData.reSizeBitmap(bmp, 400, 800);
+//        onImportImage(path, name, newBitmap, count);
         //checkWritePermission();
-
+        importDataFace(path, name, 0);
     }
 
+    private void importDataFace(List<String> listPath, List<String> listName, int count) {
+        final int[] _count = {count};
+        Bitmap bmp = BitmapFactory.decodeFile(listPath.get(count));
+        Bitmap newBitmap = RecognitionImageData.reSizeBitmap(bmp, 400, 800);
+        onImportImage(listPath.get(count), listName.get(count), newBitmap, 0, new CallBackImport() {
+            @Override
+            public void done() {
+                if (count == listPath.size() - 1)
+                    return;
+                _count[0] += 1;
+                importDataFace(listPath, listName, _count[0]);
+            }
+        });
+    }
 
 //    private void onAddClick() {
 //
@@ -308,6 +334,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
         }
 
         InputImage image = InputImage.fromBitmap(croppedBitmap, 0);
+
         faceDetector
                 .process(image)
                 .addOnSuccessListener(faces -> {
@@ -348,7 +375,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
     @Override
     protected void setNumThreads(final int numThreads) {
-        runInBackground(() -> detector.setNumThreads(numThreads));
+        runInBackground(() -> detector.setNumThreads(50));
     }
 
 
@@ -529,7 +556,6 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 //                            (int) faceBB.width(),
 //                            (int) faceBB.height());
 //                }
-
                 final long startTime = SystemClock.uptimeMillis();
                 final List<SimilarityClassifier.Recognition> resultsAux = detector.recognizeImage(faceBmp, false);
                 lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
@@ -554,12 +580,14 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                             Intent data = new Intent();
                             data.putExtra("result", 1);
                             setResult(RESULT_OK, data);
-                            finish();
+//                                File file = new File(path);
+//                                if (file.exists()) file.delete();
+                            if (!muti)
+                                finish();
                         } else {
                             color = Color.RED;
                         }
                     }
-
                 }
 
                 if (getCameraFacing() == CameraCharacteristics.LENS_FACING_FRONT) {
@@ -600,7 +628,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
     }
 
-    private void onHandle(List<Face> faces, String name) {
+    private void onHandle(List<Face> faces, String name, CallBackImport callBackImport) {
 //        faceBmp1 = Bitmap.createBitmap(TF_OD_API_INPUT_SIZE, TF_OD_API_INPUT_SIZE, Config.ARGB_8888);
 //        cropCopyBitmap1 = Bitmap.createBitmap(croppedBitmap1);
 //        final Canvas canvas = new Canvas(cropCopyBitmap1);
@@ -677,7 +705,6 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 float confidence = -1f;
                 Integer color = Color.GREEN;
                 Object extra = null;
-                Bitmap crop = null;
 
 //                if (add) {
                 crop = Bitmap.createBitmap(portraitBmpImport,
@@ -731,15 +758,16 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                     flip.mapRect(boundingBox);
 
                 }
-
-                final SimilarityClassifier.Recognition result = new SimilarityClassifier.Recognition(
-                        "0", label, confidence, boundingBox);
-
-                result.setColor(color);
-                result.setLocation(boundingBox);
-                result.setExtra(extra);
-                result.setCrop(crop);
-                mappedRecognitions.add(result);
+                for (int i = 0; i < 4; i++) {
+                    SimilarityClassifier.Recognition result = new SimilarityClassifier.Recognition(
+                            "0", label, confidence, boundingBox);
+                    result.setColor(color);
+                    result.setLocation(boundingBox);
+                    result.setExtra(extra);
+                    result.setCrop(crop);
+                    mappedRecognitions.add(result);
+                    crop = ImageRotator.rotateImageOrientation(crop, 90 * (i + 1));
+                }
 
             }
 
@@ -753,10 +781,15 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 //        updateResults(currTimestamp, mappedRecognitions);
         if (mappedRecognitions.size() > 0) {
             LOGGER.i("Adding results");
-            SimilarityClassifier.Recognition rec = mappedRecognitions.get(0);
+//            SimilarityClassifier.Recognition rec = mappedRecognitions.get(0);
+            for (int i = 0; i < mappedRecognitions.size(); i++) {
+                SimilarityClassifier.Recognition rec = mappedRecognitions.get(i);
+                detector.register(name, rec);
+            }
+            callBackImport.done();
 //            if (rec.getExtra() != null) {
 //            Bitmap r = rec.getCrop();
-            detector.register(name, rec);
+
 //                showAddFaceDialog(rec);
 //            }
 
@@ -764,8 +797,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
     }
 
-    private void onImportImage(byte[] bytearray, String name) {
-        Bitmap bmp = BitmapFactory.decodeByteArray(bytearray, 0, bytearray.length);
+    private void onImportImage(String path, String name, Bitmap bmp, int count, CallBackImport callBackImport) {
+        final int[] _count = {count};
         InputImage image = InputImage.fromBitmap(bmp, 0);
         int targetW = bmp.getWidth();
         int targetH = bmp.getHeight();
@@ -781,18 +814,70 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 .process(image)
                 .addOnSuccessListener(faces -> {
                     if (faces.size() == 0) {
-//                        updateResults(currTimestamp, new LinkedList<>());
-                        Intent data = new Intent();
-                        data.putExtra("result", -1);
-                        setResult(RESULT_OK, data);
-                        finish();
-                        return;
+                        try {
+                            _count[0] += 1;
+                            if (_count[0] > 3) {
+                                if (!muti) {
+                                    Intent data = new Intent();
+                                    data.putExtra("result", -1);
+                                    setResult(RESULT_OK, data);
+                                    finish();
+                                }
+                                return;
+                            }
+                            onImportImage(path, name, ImageRotator.rotateImage(bmp, path), _count[0], callBackImport);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                     runInBackground(
                             () -> {
-                                onHandle(faces, name);
+                                onHandle(faces, name, new CallBackImport() {
+                                    @Override
+                                    public void done() {
+                                        callBackImport.done();
+                                    }
+                                });
                                 addPending = false;
                             });
                 });
+    }
+
+}
+
+class ImageRotator {
+    public static Bitmap rotateImage(String path) throws IOException {
+        Bitmap bitmap = BitmapFactory.decodeFile(path);
+        return rotateImage(bitmap, path);
+    }
+
+    public static Bitmap rotateImage(Bitmap bitmap, String path) throws IOException {
+        int rotate = 0;
+        ExifInterface exif;
+        exif = new ExifInterface(path);
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL);
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                rotate = 270;
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                rotate = 180;
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                rotate = 90;
+                break;
+        }
+        Matrix matrix = new Matrix();
+        matrix.postRotate(rotate);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                bitmap.getHeight(), matrix, true);
+    }
+
+    public static Bitmap rotateImageOrientation(Bitmap bitmap, int rotate) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(rotate);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                bitmap.getHeight(), matrix, true);
     }
 }
