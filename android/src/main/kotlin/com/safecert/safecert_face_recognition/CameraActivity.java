@@ -227,8 +227,8 @@ public abstract class CameraActivity extends AppCompatActivity
 //    finish();
     overridePendingTransition(0, 0);
     startActivity(intent);
-    finish();
     overridePendingTransition(0, 0);
+      finish();
   }
 
   protected int[] getRgbBytes() {
@@ -513,9 +513,11 @@ public abstract class CameraActivity extends AppCompatActivity
             CameraConnectionFragment camera2Fragment =
                     CameraConnectionFragment.newInstance(
                             (size, rotation) -> {
-                                previewHeight = size.getHeight();
-                                previewWidth = size.getWidth();
-                                CameraActivity.this.onPreviewSizeChosen(size, rotation);
+                                try{
+                                    previewHeight = size.getHeight();
+                                    previewWidth = size.getWidth();
+                                    CameraActivity.this.onPreviewSizeChosen(size, rotation);
+                                }catch (Exception e){}
                             },
                             this,
                             getLayoutId(),

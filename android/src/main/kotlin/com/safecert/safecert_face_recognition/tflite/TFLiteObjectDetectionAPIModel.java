@@ -14,17 +14,26 @@ limitations under the License.
 ==============================================================================*/
 
 package com.safecert.safecert_face_recognition.tflite;
+/* Copyright 2019 The TensorFlow Authors. All Rights Reserved.
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================*/
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.Trace;
 import android.util.Pair;
-
-import com.safecert.safecert_face_recognition.env.Logger;
-
-import org.tensorflow.lite.Interpreter;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -41,11 +50,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.tensorflow.lite.Interpreter;
+import com.safecert.safecert_face_recognition.env.Logger;
+
 /**
  * Wrapper for frozen detection models trained using the Tensorflow Object Detection API:
  * - https://github.com/tensorflow/models/tree/master/research/object_detection
  * where you can find the training code.
- *
+ * <p>
  * To use pretrained models in the API or convert to TF Lite models, please see docs for details:
  * - https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md
  * - https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/running_on_mobile_tensorflowlite.md#running-our-model-on-android
@@ -92,19 +104,23 @@ public class TFLiteObjectDetectionAPIModel
 
   private Interpreter tfLite;
 
-// Face Mask Detector Output
+  // Face Mask Detector Output
   private float[][] output;
 
   private HashMap<String, Recognition> registered = new HashMap<>();
+
   public void register(String name, Recognition rec) {
-      registered.put(name, rec);
+    registered.put(name, rec);
   }
 
-  private TFLiteObjectDetectionAPIModel() {}
+  private TFLiteObjectDetectionAPIModel() {
+  }
 
-  /** Memory-map the model file in Assets. */
+  /**
+   * Memory-map the model file in Assets.
+   */
   private static MappedByteBuffer loadModelFile(AssetManager assets, String modelFilename)
-      throws IOException {
+          throws IOException {
     AssetFileDescriptor fileDescriptor = assets.openFd(modelFilename);
     FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
     FileChannel fileChannel = inputStream.getChannel();
@@ -116,19 +132,19 @@ public class TFLiteObjectDetectionAPIModel
   /**
    * Initializes a native TensorFlow session for classifying images.
    *
-   * @param assetManager The asset manager to be used to load assets.
+   * @param assetManager  The asset manager to be used to load assets.
    * @param modelFilename The filepath of the model GraphDef protocol buffer.
    * @param labelFilename The filepath of label file for classes.
-   * @param inputSize The size of image input
-   * @param isQuantized Boolean representing model is quantized or not
+   * @param inputSize     The size of image input
+   * @param isQuantized   Boolean representing model is quantized or not
    */
   public static SimilarityClassifier create(
-      final AssetManager assetManager,
-      final String modelFilename,
-      final String labelFilename,
-      final int inputSize,
-      final boolean isQuantized)
-      throws IOException {
+          final AssetManager assetManager,
+          final String modelFilename,
+          final String labelFilename,
+          final int inputSize,
+          final boolean isQuantized)
+          throws IOException {
 
     final TFLiteObjectDetectionAPIModel d = new TFLiteObjectDetectionAPIModel();
 
@@ -176,19 +192,19 @@ public class TFLiteObjectDetectionAPIModel
 
     Pair<String, Float> ret = null;
     for (Map.Entry<String, Recognition> entry : registered.entrySet()) {
-        final String name = entry.getKey();
-        float[][] a = (float[][]) entry.getValue().getExtra();
-        final float[] knownEmb = a[0];
+      final String name = entry.getKey();
+      float[][] a = (float[][]) entry.getValue().getExtra();
+      final float[] knownEmb = a[0];
 
-        float distance = 0;
-        for (int i = 0; i < emb.length; i++) {
-              float diff = emb[i] - knownEmb[i];
-              distance += diff*diff;
-        }
-        distance = (float) Math.sqrt(distance);
-        if (ret == null || distance < ret.second) {
-            ret = new Pair<>(name, distance);
-        }
+      float distance = 0;
+      for (int i = 0; i < emb.length; i++) {
+        float diff = emb[i] - knownEmb[i];
+        distance += diff * diff;
+      }
+      distance = (float) Math.sqrt(distance);
+      if (ret == null || distance < ret.second) {
+        ret = new Pair<>(name, distance);
+      }
     }
 
     return ret;
@@ -258,18 +274,18 @@ public class TFLiteObjectDetectionAPIModel
     String label = "?";
 
     if (registered.size() > 0) {
-        //LOGGER.i("dataset SIZE: " + registered.size());
-        final Pair<String, Float> nearest = findNearest(embeedings[0]);
-        if (nearest != null) {
+      //LOGGER.i("dataset SIZE: " + registered.size());
+      final Pair<String, Float> nearest = findNearest(embeedings[0]);
+      if (nearest != null) {
 
-            final String name = nearest.first;
-            label = name;
-            distance = nearest.second;
+        final String name = nearest.first;
+        label = name;
+        distance = nearest.second;
 
-            LOGGER.i("nearest: " + name + " - distance: " + distance);
+        LOGGER.i("nearest: " + name + " - distance: " + distance);
 
 
-        }
+      }
     }
 
 
@@ -281,10 +297,10 @@ public class TFLiteObjectDetectionAPIModel
             distance,
             new RectF());
 
-    recognitions.add( rec );
+    recognitions.add(rec);
 
     if (storeExtra) {
-        rec.setExtra(embeedings);
+      rec.setExtra(embeedings);
     }
 
     Trace.endSection();
@@ -292,7 +308,8 @@ public class TFLiteObjectDetectionAPIModel
   }
 
   @Override
-  public void enableStatLogging(final boolean logStats) {}
+  public void enableStatLogging(final boolean logStats) {
+  }
 
   @Override
   public String getStatString() {
@@ -300,7 +317,8 @@ public class TFLiteObjectDetectionAPIModel
   }
 
   @Override
-  public void close() {}
+  public void close() {
+  }
 
   public void setNumThreads(int num_threads) {
     if (tfLite != null) tfLite.setNumThreads(num_threads);

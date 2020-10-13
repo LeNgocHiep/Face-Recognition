@@ -229,8 +229,8 @@ class _MyAppState extends State<MyApp> {
                           SafecertFaceRecognition.startWithImagePath(
                                   path: listPath, name: listName, isMuti: true)
                               .then((value2) => {
-                                    listPath.clear(),
-                                    listName.clear(),
+                                    // listPath.clear(),
+                                    // listName.clear(),
                                     setState(() {
                                       if (value2 == RecognitionStatus.OK)
                                         _platformVersion = "OK";

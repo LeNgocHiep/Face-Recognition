@@ -32,6 +32,7 @@ import android.media.ExifInterface;
 import android.media.ImageReader.OnImageAvailableListener;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.util.Size;
 import android.util.TypedValue;
 import android.widget.Toast;
@@ -184,19 +185,38 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
         faceDetector = detector;
 
-
-
+        if (detector == null) {
+            try {
+                this.detector =
+                        TFLiteObjectDetectionAPIModel.create(
+                                getAssets(),
+                                TF_OD_API_MODEL_FILE,
+                                TF_OD_API_LABELS_FILE,
+                                TF_OD_API_INPUT_SIZE,
+                                TF_OD_API_IS_QUANTIZED);
+                //cropSize = TF_OD_API_INPUT_SIZE;
+                Log.d("HIEP", "HIEP");
+            } catch (final IOException e) {
+                e.printStackTrace();
+                LOGGER.e(e, "Exception initializing classifier!");
+                Toast toast =
+                        Toast.makeText(
+                                getApplicationContext(), "Classifier could not be initialized", Toast.LENGTH_SHORT);
+                toast.show();
+                finish();
+            }
+        }
 //        Bitmap bmp = BitmapFactory.decodeFile(path);
 //        newBitmap = RecognitionImageData.reSizeBitmap(bmp, 400, 800);
 //        onImportImage(path, name, newBitmap, count);
         //checkWritePermission();
-        importDataFace(path, name, 0);
+//        importDataFace(path, name, 0);
     }
 
     private void importDataFace(List<String> listPath, List<String> listName, int count) {
         final int[] _count = {count};
         Bitmap bmp = BitmapFactory.decodeFile(listPath.get(count));
-        Bitmap newBitmap = RecognitionImageData.reSizeBitmap(bmp, 400, 800);
+        Bitmap newBitmap = RecognitionImageData.reSizeBitmap(bmp, 640, 480);
         onImportImage(listPath.get(count), listName.get(count), newBitmap, 0, new CallBackImport() {
             @Override
             public void done() {
@@ -304,6 +324,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 });
 
         tracker.setFrameConfiguration(previewWidth, previewHeight, sensorOrientation);
+        importDataFace(path, name, 0);
     }
 
 
@@ -375,7 +396,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
     @Override
     protected void setNumThreads(final int numThreads) {
-        runInBackground(() -> detector.setNumThreads(50));
+        runInBackground(() -> detector.setNumThreads(numThreads));
     }
 
 
@@ -676,10 +697,10 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 //            LOGGER.i("Running detection on face " + currTimestamp);
 //            results = detector.recognizeImage(croppedBitmap);
 
-            final RectF boundingBox = new RectF(face.getBoundingBox());
+            RectF boundingBox = new RectF(face.getBoundingBox());
 
             //final boolean goodConfidence = result.getConfidence() >= minimumConfidence;
-            final boolean goodConfidence = true; //face.get;
+            boolean goodConfidence = true; //face.get;
             if (boundingBox != null && goodConfidence) {
 
                 // maps crop coordinates to original
@@ -714,19 +735,22 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                         (int) faceBB.height());
 //                crop = Bitmap.createScaledBitmap(crop, TF_OD_API_INPUT_SIZE, TF_OD_API_INPUT_SIZE, true);
 ////                }
+                Log.d("HIEP", detector.toString());
+                Log.d("HIEP", faceBmpImport.toString());
+                if (faceBmpImport != null && detector != null) {
+                    final long startTime = SystemClock.uptimeMillis();
+                    final List<SimilarityClassifier.Recognition> resultsAux = detector.recognizeImage(faceBmpImport, true);
+                    lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
 
-                final long startTime = SystemClock.uptimeMillis();
-                final List<SimilarityClassifier.Recognition> resultsAux = detector.recognizeImage(faceBmpImport, true);
-                lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
+                    if (resultsAux.size() > 0) {
 
-                if (resultsAux.size() > 0) {
-
-                    SimilarityClassifier.Recognition result = resultsAux.get(0);
+                        SimilarityClassifier.Recognition result = resultsAux.get(0);
 //
-                    extra = result.getExtra();
+                        extra = result.getExtra();
 //          Object extra = result.getExtra();
 //          if (extra != null) {
 //            LOGGER.i("embeeding retrieved " + extra.toString());
+                    }
                 }
 
 //                    float conf = result.getDistance();
@@ -784,8 +808,10 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 //            SimilarityClassifier.Recognition rec = mappedRecognitions.get(0);
             for (int i = 0; i < mappedRecognitions.size(); i++) {
                 SimilarityClassifier.Recognition rec = mappedRecognitions.get(i);
-                detector.register(name, rec);
+                detector.register(name + i, rec);
             }
+
+
             callBackImport.done();
 //            if (rec.getExtra() != null) {
 //            Bitmap r = rec.getCrop();
@@ -814,17 +840,17 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 .process(image)
                 .addOnSuccessListener(faces -> {
                     if (faces.size() == 0) {
-                        try {
-                            _count[0] += 1;
-                            if (_count[0] > 3) {
-                                if (!muti) {
-                                    Intent data = new Intent();
-                                    data.putExtra("result", -1);
-                                    setResult(RESULT_OK, data);
-                                    finish();
-                                }
-                                return;
+                        _count[0] += 1;
+                        if (_count[0] > 3) {
+                            if (!muti) {
+                                Intent data = new Intent();
+                                data.putExtra("result", -1);
+                                setResult(RESULT_OK, data);
+                                finish();
                             }
+                            return;
+                        }
+                        try {
                             onImportImage(path, name, ImageRotator.rotateImage(bmp, path), _count[0], callBackImport);
                         } catch (IOException e) {
                             e.printStackTrace();
